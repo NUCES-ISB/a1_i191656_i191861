@@ -17,7 +17,10 @@ class LoRAParametrization(nn.Module):
         super().__init__()
         # if weight is stored as (fan_out, fan_in), the memory layout of A & B follows (W + BA)x
         # otherwise, it's x(W + AB). This allows us to tie the weights between linear layers and embeddings
-        self.swap = (lambda x: (x[1], x[0])) if fan_in_fan_out else (lambda x: x)
+        if fan_in_fan_out:
+            self.swap = (lambda x: (x[1], x[0]))
+        else:
+            self.swap = (lambda x: x)
         self.lora_A = nn.Parameter(torch.zeros(self.swap((rank, fan_in))))
         self.lora_B = nn.Parameter(torch.zeros(self.swap((fan_out, rank))))
         nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
