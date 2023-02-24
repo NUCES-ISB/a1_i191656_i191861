@@ -1,0 +1,34 @@
+name: Run_TimeSeriesLibrary_Tests
+
+on: 
+  push:
+    branches:
+      - i191656
+
+permissions:
+  contents: read
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Install Python
+        uses: actions/setup-python@v2
+        
+      - name: Store paths of all python files in repo
+        run: python get_python_file_paths.py
+        
+      - name: Install pylint
+        run: pip install pylint
+        
+      - name: Run Pylint
+        run: grep "" python_file_paths.txt | xargs pylint
+      
+      - name: Install black
+        run: pip install black
+        
+      - name: Run black
+        run: grep "" python_file_paths.txt | while read line ; do python -m black $line ; done
