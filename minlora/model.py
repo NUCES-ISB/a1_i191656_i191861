@@ -25,7 +25,8 @@ class LoRAParametrization(nn.Module):
         #    the memory layout of A & B follows (W + BA)x
         # otherwise,
         #    it's x(W + AB).
-        #This allows us to tie the weights between linear layers and embeddings.
+        #This allows us to tie the weights \
+        #    between linear layers and embeddings.
         if fan_in_fan_out:
             self.swap = (lambda x: (x[1], x[0]))
         else:
@@ -50,15 +51,15 @@ class LoRAParametrization(nn.Module):
 
     def _dropout(self,
                  A):
-        # to mimic the original implementation: A @ dropout(x), we do (A * dropout(ones)) @ x
+        # to mimic the original implementation:
+        #     A @ dropout(x), we do (A * dropout(ones)) @ x
         return A * self.lora_dropout(self.lora_dropout_mask)
 
     def lora_forward(self,
                      X):
-        return X + torch.mm(*self.swap((self.lora_B,
-                                        self.dropout_fn(self.lora_A)
-                                       )
-                                      )
+        swap_input = (self.lora_B,
+                      self.dropout_fn(self.lora_A))
+        return X + torch.mm(*self.swap(swap_input)
                            ).view(X.shape) * self.scaling
 
     def forward(self,
