@@ -1,5 +1,0 @@
-.\get_python_file_paths.py
-.\setup.py
-.\minlora\model.py
-.\minlora\utils.py
-.\minlora\__init__.py
