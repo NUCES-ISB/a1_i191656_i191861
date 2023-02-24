@@ -1,0 +1,32 @@
+name: Foramtting Tests
+
+on: 
+  push:
+    branches:
+      - i191861
+
+permissions:
+  contents: read
+
+jobs:
+  run_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Install Python
+        uses: actions/setup-python@v2
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+              
+      - name: Install black
+        run: pip install black
+        
+      - name: Run black
+        run: python -m black --include "\\.py" ./
+        
+      
+
+        
