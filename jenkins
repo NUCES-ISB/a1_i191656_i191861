@@ -28,5 +28,6 @@ pipeline {
             steps {
                 bat 'flake8 ./'
             }
+        }
      }
 }
