@@ -59,8 +59,8 @@ class LoRAParametrization(nn.Module):
                      X):
         swap_input = (self.lora_B,
                       self.dropout_fn(self.lora_A))
-        return X + torch.mm(*self.swap(swap_input)
-                           ).view(X.shape) * self.scaling
+        mat = torch.mm(*self.swap(swap_input)).view(X.shape)
+        return X +  mat * self.scaling
 
     def forward(self,
                 X):
