@@ -9,12 +9,12 @@ pipeline {
                 bat 'pip install -r requirements.txt'
             }
         }
-        stage('Install black') {
+        stage('Install Black') {
             steps {
                 bat 'pip install black'
             }
         }
-        stage('Run black') {
+        stage('Run Black') {
             steps {
                 bat 'python -m black --include "\.py" ./'
             }
