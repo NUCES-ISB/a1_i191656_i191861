@@ -17,7 +17,7 @@ __all__ = ['LoRAParametrization',
            'add_lora', 
            'default_lora_config', 
            'merge_lora', 
-           'remove_lora'
+           'remove_lora',
            'apply_to_lora',
            'disable_lora',
            'enable_lora',
