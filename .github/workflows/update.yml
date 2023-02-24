@@ -20,19 +20,16 @@ jobs:
       
       - name: Install dependencies
         run: pip install -r requirements.txt
-
-      - name: Store paths of all python files in repo
-        run: python get_python_file_paths.py
               
       - name: Install black
         run: pip install black
         
       - name: Run black
-        run: cat python_file_paths.txt | xargs python -m black
+        run: python -m black --include "\\.py" ./
         
       - name: Install flake8
         run: pip install flake8
         
       - name: Run Flake8
-        run: cat python_file_paths.txt | xargs flake8
+        run: cat flake8 ./
         
