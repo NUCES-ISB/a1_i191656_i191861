@@ -19,5 +19,14 @@ pipeline {
                 bat 'python -m black --include "\\.py" ./'
             }
         }
+        stage('Install Flake8') {
+            steps {
+                bat 'pip install flake8'
+            }
+        }
+        stage('Run Flake8') {
+            steps {
+                bat 'flake8 ./'
+            }
      }
 }
