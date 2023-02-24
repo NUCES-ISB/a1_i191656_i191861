@@ -81,7 +81,8 @@ def _append_lora(lora_layer):
     lora_layer.lora_Bs.append(nn.Parameter(lora_layer.lora_B.clone()))
 
 
-def load_multiple_lora(model, lora_state_dicts):
+def load_multiple_lora(model,
+                       lora_state_dicts):
     model.apply(apply_to_lora(_prepare_for_multiple_lora))
     for state_dict in lora_state_dicts:
         _ = model.load_state_dict(state_dict, strict=False)
@@ -89,12 +90,14 @@ def load_multiple_lora(model, lora_state_dicts):
     return model
 
 
-def _select_lora(lora_layer, index):
+def _select_lora(lora_layer,
+                 index):
     lora_layer.lora_A = lora_layer.lora_As[index]
     lora_layer.lora_B = lora_layer.lora_Bs[index]
 
 
-def select_lora(model, index):
+def select_lora(model,
+                index):
     model.apply(apply_to_lora(lambda x: _select_lora(x, index)))
     return model
 
@@ -104,9 +107,12 @@ def select_lora(model, index):
 #            -------------------
 
 
-def tie_weights(linear: nn.Linear, embedding: nn.Embedding):
+def tie_weights(linear: nn.Linear,
+                embedding: nn.Embedding):
     """
-        tie the weights of the linear layer and the embedding layer both with the same lora
+        w = weights of the linear layer
+        e = weights of the embedding layer
+        tie w and e with same lora
     """
     # this line below is optional if the original is already tied
     linear_weight_orig = linear.parametrizations.weight.original
@@ -117,7 +123,8 @@ def tie_weights(linear: nn.Linear, embedding: nn.Embedding):
     embedding.parametrizations.weight[0].lora_B = linear_lora_A
 
 
-def untie_weights(linear: nn.Linear, embedding: nn.Embedding):
+def untie_weights(linear: nn.Linear,
+                  embedding: nn.Embedding):
     """
         untie the weights of the linear layer and the embedding layer
     """
