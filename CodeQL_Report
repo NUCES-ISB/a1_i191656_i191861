@@ -1,0 +1,14 @@
+The Code Scan passed successfully, and no vulnerabilities were detected.
+
+Analysis produced the following diagnostic data:
+
+|             Diagnostic              |  Summary  |
++-------------------------------------+-----------+
+| Successfully extracted Python files | 4 results |
+
+Analysis produced the following metric data:
+
+|                         Metric                          | Value  |
++---------------------------------------------------------+--------+
+| Total lines of Python code in the database              | 309074 |
+| Total lines of user written Python code in the database |    252 |
