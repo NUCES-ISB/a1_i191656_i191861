@@ -112,7 +112,7 @@ class LoRAParametrization(nn.Module):
 # specify which layers to add lora to
 # by default only add to linear layers
 default_lora_config = {
-    nn.Linear: {"weight": partial(LoRAParametrization.from_linear, rank=4),}
+    nn.Linear: {"weight": partial(LoRAParametrization.from_linear, rank=4)}
 }
 
 
