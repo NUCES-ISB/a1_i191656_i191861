@@ -3,7 +3,7 @@ name: "Security Analysis"
 on:
   push:
     branches: 
-      - i191656
+      - i191861
    
 jobs:
   codeQL_job:
