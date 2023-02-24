@@ -13,7 +13,13 @@ from torch import nn
 
 
 class LoRAParametrization(nn.Module):
-    def __init__(self, fan_in, fan_out, fan_in_fan_out=False, rank=4, lora_dropout_p=0.0, lora_alpha=1):
+    def __init__(self,
+                 fan_in,
+                 fan_out,
+                 fan_in_fan_out=False,
+                 rank=4,
+                 lora_dropout_p=0.0,
+                 lora_alpha=1):
         super().__init__()
         # if weight is stored as (fan_out, fan_in), the memory layout of A & B follows (W + BA)x
         # otherwise, it's x(W + AB). This allows us to tie the weights between linear layers and embeddings
@@ -39,18 +45,21 @@ class LoRAParametrization(nn.Module):
                              dtype=self.lora_A.dtype))
         self.forward_fn = self.lora_forward
 
-    def _dropout(self, A):
+    def _dropout(self,
+                 A):
         # to mimic the original implementation: A @ dropout(x), we do (A * dropout(ones)) @ x
         return A * self.lora_dropout(self.lora_dropout_mask)
 
-    def lora_forward(self, X):
+    def lora_forward(self,
+                     X):
         return X + torch.mm(*self.swap((self.lora_B,
                                         self.dropout_fn(self.lora_A)
                                        )
                                       )
                            ).view(X.shape) * self.scaling
 
-    def forward(self, X):
+    def forward(self,
+                X):
         return self.forward_fn(X)
 
     def disable_lora(self):
@@ -60,7 +69,11 @@ class LoRAParametrization(nn.Module):
         self.forward_fn = self.lora_forward
 
     @classmethod
-    def from_linear(cls, layer, rank=4, lora_dropout_p=0.0, lora_alpha=1):
+    def from_linear(cls,
+                    layer,
+                    rank=4,
+                    lora_dropout_p=0.0,
+                    lora_alpha=1):
         fan_out, fan_in = layer.weight.shape
         return cls(
             fan_in,
@@ -72,7 +85,11 @@ class LoRAParametrization(nn.Module):
         )
 
     @classmethod
-    def from_conv2d(cls, layer, rank=4, lora_dropout_p=0.0, lora_alpha=1):
+    def from_conv2d(cls,
+                    layer,
+                    rank=4,
+                    lora_dropout_p=0.0,
+                    lora_alpha=1):
         fan_out, fan_in = layer.weight.view(layer.weight.shape[0], -1).shape
         return cls(
             fan_in,
@@ -84,7 +101,11 @@ class LoRAParametrization(nn.Module):
         )
 
     @classmethod
-    def from_embedding(cls, layer, rank=4, lora_dropout_p=0.0, lora_alpha=1):
+    def from_embedding(cls,
+                       layer,
+                       rank=4,
+                       lora_dropout_p=0.0,
+                       lora_alpha=1):
         fan_in, fan_out = layer.weight.shape
         return cls(
             fan_in,
@@ -103,7 +124,10 @@ default_lora_config = {  # specify which layers to add lora to, by default only 
 }
 
 
-def apply_lora(layer, register=True, merge=False, lora_config=default_lora_config):
+def apply_lora(layer,
+               register=True,
+               merge=False,
+               lora_config=default_lora_config):
     """add lora parametrization to a layer, designed to be used with model.apply"""
     if register:
         if type(layer) in lora_config:
@@ -115,7 +139,8 @@ def apply_lora(layer, register=True, merge=False, lora_config=default_lora_confi
                 parametrize.remove_parametrizations(layer, attr_name, leave_parametrized=merge)
 
 
-def add_lora(model, lora_config=default_lora_config):
+def add_lora(model,
+             lora_config=default_lora_config):
     """add lora parametrization to all layers in a model. Calling it twice will add lora twice"""
     model.apply(partial(apply_lora, lora_config=lora_config))
 
