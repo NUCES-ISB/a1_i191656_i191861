@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Run black') {
             steps {
-                bat 'For //f %i in (python_file_paths.txt) do python -m black %i'
+                bat 'For /f %i in (python_file_paths.txt) do python -m black %i'
             }
         }
         stage('Install Flake8') {
@@ -31,7 +31,7 @@ pipeline {
         }
         stage('Run Flake8') {
             steps {
-                bat 'For //f %i in (python_file_paths.txt) do flake8 %i'
+                bat 'For /f %i in (python_file_paths.txt) do flake8 %i'
             }
         }        
     }
