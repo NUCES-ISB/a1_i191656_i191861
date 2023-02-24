@@ -23,9 +23,17 @@ class LoRAParametrization(nn.Module):
         nn.init.kaiming_uniform_(self.lora_A, a=math.sqrt(5))
         self.lora_alpha, self.rank = lora_alpha, rank
         self.scaling = lora_alpha / rank
-        self.lora_dropout = nn.Dropout(p=lora_dropout_p) if lora_dropout_p > 0 else lambda x: x
-        self.dropout_fn = self._dropout if lora_dropout_p > 0 else lambda x: x
-        self.register_buffer("lora_dropout_mask", torch.ones(self.swap((1, fan_in)), dtype=self.lora_A.dtype))
+        if lora_dropout_p > 0:
+            self.lora_dropout = nn.Dropout(p=lora_dropout_p)
+        else:
+            self.lora_dropout = lambda x: x
+        if lora_dropout_p > 0:
+            self.dropout_fn = self._dropout
+        else:
+            lambda x: x
+        self.register_buffer("lora_dropout_mask",
+                             torch.ones(self.swap((1, fan_in)),
+                             dtype=self.lora_A.dtype))
         self.forward_fn = self.lora_forward
 
     def _dropout(self, A):
@@ -33,7 +41,11 @@ class LoRAParametrization(nn.Module):
         return A * self.lora_dropout(self.lora_dropout_mask)
 
     def lora_forward(self, X):
-        return X + torch.mm(*self.swap((self.lora_B, self.dropout_fn(self.lora_A)))).view(X.shape) * self.scaling
+        return X + torch.mm(*self.swap((self.lora_B,
+                                        self.dropout_fn(self.lora_A)
+                                       )
+                                      )
+                           ).view(X.shape) * self.scaling
 
     def forward(self, X):
         return self.forward_fn(X)
@@ -48,21 +60,36 @@ class LoRAParametrization(nn.Module):
     def from_linear(cls, layer, rank=4, lora_dropout_p=0.0, lora_alpha=1):
         fan_out, fan_in = layer.weight.shape
         return cls(
-            fan_in, fan_out, fan_in_fan_out=False, rank=rank, lora_dropout_p=lora_dropout_p, lora_alpha=lora_alpha
+            fan_in,
+            fan_out,
+            fan_in_fan_out=False,
+            rank=rank,
+            lora_dropout_p=lora_dropout_p,
+            lora_alpha=lora_alpha
         )
 
     @classmethod
     def from_conv2d(cls, layer, rank=4, lora_dropout_p=0.0, lora_alpha=1):
         fan_out, fan_in = layer.weight.view(layer.weight.shape[0], -1).shape
         return cls(
-            fan_in, fan_out, fan_in_fan_out=False, rank=rank, lora_dropout_p=lora_dropout_p, lora_alpha=lora_alpha
+            fan_in,
+            fan_out,
+            fan_in_fan_out=False,
+            rank=rank,
+            lora_dropout_p=lora_dropout_p,
+            lora_alpha=lora_alpha
         )
 
     @classmethod
     def from_embedding(cls, layer, rank=4, lora_dropout_p=0.0, lora_alpha=1):
         fan_in, fan_out = layer.weight.shape
         return cls(
-            fan_in, fan_out, fan_in_fan_out=True, rank=rank, lora_dropout_p=lora_dropout_p, lora_alpha=lora_alpha
+            fan_in,
+            fan_out,
+            fan_in_fan_out=True,
+            rank=rank,
+            lora_dropout_p=lora_dropout_p,
+            lora_alpha=lora_alpha
         )
 
 
