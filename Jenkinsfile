@@ -9,11 +9,6 @@ pipeline {
                 bat 'pip install -r requirements.txt'
             }
         }
-        stage('Store paths of all python files in repo') {
-            steps {
-                bat 'python get_python_file_paths.py'
-            }
-        }
         stage('Install black') {
             steps {
                 bat 'pip install black'
@@ -21,7 +16,7 @@ pipeline {
         }
         stage('Run black') {
             steps {
-                bat 'For /f %i in (python_file_paths.txt) do python -m black %i'
+                bat 'python -m black --include "*.py" ./'
             }
         }
         stage('Install Flake8') {
@@ -31,7 +26,7 @@ pipeline {
         }
         stage('Run Flake8') {
             steps {
-                bat 'For /f %i in (python_file_paths.txt) do flake8 %i'
+                bat 'flake8 ./'
             }
         }        
     }
