@@ -1,4 +1,4 @@
-name: Run_TimeSeriesLibrary_Tests
+name: Run_minLoRA_Tests
 
 on: 
   push:
@@ -17,7 +17,10 @@ jobs:
         
       - name: Install Python
         uses: actions/setup-python@v2
-        
+      
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
       - name: Store paths of all python files in repo
         run: python get_python_file_paths.py
         
@@ -25,10 +28,10 @@ jobs:
         run: pip install pylint
         
       - name: Run Pylint
-        run: grep "" python_file_paths.txt | xargs pylint
+        run: cat python_file_paths.txt | xargs pylint
       
       - name: Install black
         run: pip install black
         
       - name: Run black
-        run: grep "" python_file_paths.txt | while read line ; do python -m black $line ; done
+        run: cat python_file_paths.txt | xargs python -m black
