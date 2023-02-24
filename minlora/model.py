@@ -120,8 +120,9 @@ class LoRAParametrization(nn.Module):
             lora_alpha=lora_alpha
         )
 
-
-default_lora_config = {  # specify which layers to add lora to, by default only add to linear layers
+   
+# specify which layers to add lora to, by default only add to linear layers
+default_lora_config = {
     nn.Linear: {
         "weight": partial(LoRAParametrization.from_linear, rank=4),
     },
@@ -132,25 +133,40 @@ def apply_lora(layer,
                register=True,
                merge=False,
                lora_config=default_lora_config):
-    """add lora parametrization to a layer, designed to be used with model.apply"""
+    """
+        add lora parametrization to a layer
+        designed to be used with model.apply
+    """
     if register:
-        if type(layer) in lora_config:
-            for attr_name, parametrization in lora_config[type(layer)].items():
-                parametrize.register_parametrization(layer, attr_name, parametrization(layer))
+        layer_type = type(layer)
+        if layer_type in lora_config:
+            layer_type_config = lora_config[layer_type].items()
+            for attr_name, parametrization in layer_type_config:
+                parametrize.register_parametrization(layer,
+                                                     attr_name,
+                                                     parametrization(layer))
     else:  # this will remove all parametrizations, use with caution
         if hasattr(layer, "parametrizations"):
             for attr_name in layer.parametrizations.keys():
-                parametrize.remove_parametrizations(layer, attr_name, leave_parametrized=merge)
+                parametrize.remove_parametrizations(layer,
+                                                    attr_name,
+                                                    leave_parametrized=merge)
 
 
 def add_lora(model,
              lora_config=default_lora_config):
-    """add lora parametrization to all layers in a model. Calling it twice will add lora twice"""
+    """
+        add lora parametrization to all layers in a model.
+        Calling it twice will add lora twice
+    """
     model.apply(partial(apply_lora, lora_config=lora_config))
 
 
 def merge_lora(model):
-    """merge lora parametrization to all layers in a model. This will remove all parametrization"""
+    """
+        merge lora parametrization to all layers in a model. 
+        This will remove all parametrization
+    """
     model.apply(partial(apply_lora, register=False, merge=True))
 
 
