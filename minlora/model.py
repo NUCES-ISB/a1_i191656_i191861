@@ -21,8 +21,11 @@ class LoRAParametrization(nn.Module):
                  lora_dropout_p=0.0,
                  lora_alpha=1):
         super().__init__()
-        # if weight is stored as (fan_out, fan_in), the memory layout of A & B follows (W + BA)x
-        # otherwise, it's x(W + AB). This allows us to tie the weights between linear layers and embeddings
+        # if weight is stored as (fan_out, fan_in),
+        #    the memory layout of A & B follows (W + BA)x
+        # otherwise,
+        #    it's x(W + AB).
+        #This allows us to tie the weights between linear layers and embeddings.
         if fan_in_fan_out:
             self.swap = (lambda x: (x[1], x[0]))
         else:
