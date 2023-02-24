@@ -16,7 +16,7 @@ pipeline {
         }
         stage('Run black') {
             steps {
-                bat 'python -m black --include "*.py" ./'
+                bat 'python -m black --include "\.py" ./'
             }
         }
         stage('Install Flake8') {
