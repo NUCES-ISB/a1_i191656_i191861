@@ -121,7 +121,8 @@ class LoRAParametrization(nn.Module):
         )
 
    
-# specify which layers to add lora to, by default only add to linear layers
+# specify which layers to add lora to
+# by default only add to linear layers
 default_lora_config = {
     nn.Linear: {
         "weight": partial(LoRAParametrization.from_linear, rank=4),
@@ -171,5 +172,8 @@ def merge_lora(model):
 
 
 def remove_lora(model):
-    """remove lora parametrization to all layers in a model. This will remove all parametrization"""
+    """
+        remove lora parametrization to all layers in a model.
+        This will remove all parametrization
+    """
     model.apply(partial(apply_lora, register=False, merge=False))
