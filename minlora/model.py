@@ -94,7 +94,8 @@ class LoRAParametrization(nn.Module):
                     rank=4,
                     lora_dropout_p=0.0,
                     lora_alpha=1):
-        fan_out, fan_in = layer.weight.view(layer.weight.shape[0], -1).shape
+        weight_view = layer.weight.view(layer.weight.shape[0], -1)
+        fan_out, fan_in = weight_view.shape
         return cls(
             fan_in,
             fan_out,
